@@ -1,0 +1,19 @@
+name: Tag Deployment
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: tag_env
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Add any steps needed for your deployment process
+      - name: Deploy
+        run: echo "Deploying to env_tag environment"
