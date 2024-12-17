@@ -1,0 +1,32 @@
+name: tag_env
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  approval:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Request approval for tag deployment
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const {Octokit} = require("@octokit/rest");
+            const octokit = new Octokit({
+              auth: process.env.GITHUB_TOKEN
+            });
+
+            const response = await octokit.pulls.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Approval for tag ${context.ref}`,
+              head: context.ref,
+              base: 'main',
+              body: `Please review and approve the deployment for tag ${context.ref}.`
+            });
+
+            console.log(response.data.html_url);
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
